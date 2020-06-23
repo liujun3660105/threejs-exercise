@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <!-- <script src="../js/three.js/build/three.js"></script>
+     -->
+    <script src="../js/three.js"></script>
+    <script src="../js/threejs/examples/js/controls/OrbitControls.js"></script>
+
+</head>
+
+<body>
+    <script>
+        //材质分为三种 
+        //高光材质  MeshPhongMaterial  与光照有反应 
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        const k = width / height;
+        const s = 200;
+        const scene = new THREE.Scene();
+
+        const geometry = new THREE.BufferGeometry();
+        const vertices = new Float32Array([
+            0, 0, 0,//顶点1坐标
+            50, 0, 0,//顶点2坐标
+            0, 100, 0,//顶点3坐标
+            0, 0, 0,//顶点4坐标
+            0, 0, 100,//顶点5坐标
+            50, 0, 0,//顶点6坐标
+        ]);
+        const colors = new Float32Array([
+            1, 0, 0,//顶点1坐标
+            0, 1, 0,//顶点2坐标
+            0, 0, 1,//顶点3坐标
+            1, 1, 0,//顶点4坐标
+            0, 1, 1,//顶点5坐标
+            1, 0, 1,//顶点6坐标
+        ]);
+        // 没有法向量数据，点光源、平行光等带有方向性的光源不会起作用
+        const normals = new Float32Array([
+            0, 0, 1, //顶点1法向量
+            0, 0, 1, //顶点2法向量
+            0, 0, 1, //顶点3法向量
+
+            0, 1, 0, //顶点4法向量
+            0, 1, 0, //顶点5法向量
+            0, 1, 0, //顶点6法向量
+        ]);
+        // 设置几何体attributes属性的位置normal属性
+        const verticeNormals = new THREE.BufferAttribute(normals, 3);//3个为一组,表示一个顶点的法向量数据
+        const verticeColors = new THREE.BufferAttribute(colors, 3)//3个为一组,表示一个顶点的颜色数据RGB
+        const attribute = new THREE.BufferAttribute(vertices, 3);//三个为一组，表示一个顶点的xyz坐标
+        geometry.attributes.position = attribute;
+        geometry.attributes.color = verticeColors;
+        geometry.attributes.normal = verticeNormals;
+        //基础材质，MeshBasicMaterial这种材质不受光照效果的影响；
+        const material = new THREE.MeshLambertMaterial({
+            color: 0x0000ff,
+            // vertexColors: THREE.VertexColors,
+            // transparent: true,//开启透明度
+            // opacity: 0.5,//设置透明度具体值
+            side: THREE.DoubleSide//两面可见
+            // wireframe:true//线条模式渲染
+
+        });
+        const mesh = new THREE.Mesh(geometry, material);
+        scene.add(mesh);
+
+        //点模型材质
+        // const material = new THREE.PointsMaterial({
+        //     // color:0xff0000,
+        //     vertexColors:THREE.VertexColors,
+        //     size:10.0
+        // });//材质对象
+        // const points= new THREE.Points(geometry, material);  //点模型对象
+        // scene.add(points);
+
+
+        //线模型材质
+        // const material = new THREE.LineBasicMaterial({
+        //     color:0xff0000//线条颜色
+        // });
+        // const line = new THREE.Line(geometry,material);
+        // scene.add(line);
+
+
+        const camera = new THREE.OrthographicCamera(-s * k, s * k, s, -s, 1, 1000);
+        camera.position.set(200, 300, 200);
+        camera.lookAt(scene.position);
+
+
+        const renderer = new THREE.WebGLRenderer();
+        const pointLight = new THREE.PointLight(0xffff00);
+        pointLight.position.set(400, 200, 300);
+        scene.add(pointLight);
+        //环境光
+        const ambientLight = new THREE.AmbientLight(0x444444);
+        scene.add(ambientLight);
+
+        const axisHelper = new THREE.AxisHelper(250);
+        scene.add(axisHelper)
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0xb9d3ff, 1);
+        document.body.appendChild(renderer.domElement);
+
+        function render() {
+            renderer.render(scene, camera);
+            // requestAnimationFrame(render);
+        }
+        render();
+        const controls = new THREE.OrbitControls(camera);
+        controls.addEventListener('change', render);
+
+
+    </script>
+
+</body>
+
+</html>
